@@ -1,14 +1,14 @@
+import cats.data.Kleisli
 import org.http4s._
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
-import zio.{Task, ZIO}
+import zio.{Task, ZIO, ExitCode}
 import zio.interop.catz._
 import zio.interop.catz.implicits._
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
-
 import doobie._
 import doobie.implicits._
 import io.circe.generic.auto._
@@ -34,7 +34,7 @@ object Main extends CatsApp {
   //to compose an entire HttpApp from a bunch of routes
 
   def run(args: List[String]) =
-    streamz.compile.drain.fold(_ => 1, _ => 0)
+    streamz.compile.drain.fold(_ => ExitCode.failure, _ => ExitCode.success)
 
   def streamz() = {
     val xa = Transactor.fromDriverManager[Task](
